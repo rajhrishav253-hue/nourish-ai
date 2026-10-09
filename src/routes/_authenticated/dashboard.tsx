@@ -248,7 +248,7 @@ function LogFoodDialog({ meal, date, onClose }: { meal: string | null; date: str
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <Input type="number" inputMode="decimal" min="0" step="any" value={qty} onChange={(e) => setQty(e.target.value)} aria-label="Quantity" />
-              <Select value={sel?.unit} onValueChange={setUnit}>
+              <Select value={sel?.unit ?? "g"} onValueChange={setUnit}>
                 <SelectTrigger aria-label="Unit"><SelectValue /></SelectTrigger>
                 <SelectContent>{units.map((u) => <SelectItem key={u.unit} value={u.unit}>{u.unit === "g" ? "grams" : `${u.label} (${u.grams} g)`}</SelectItem>)}</SelectContent>
               </Select>
