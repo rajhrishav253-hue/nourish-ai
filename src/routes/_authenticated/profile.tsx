@@ -60,8 +60,8 @@ function ProfilePage() {
       const u: Record<string, unknown> = { onboarded: true };
       for (const k of NUM) u[k] = f[k] === "" ? null : Number(f[k]);
       for (const k of [...TXT, ...Object.keys(SELECTS)]) u[k] = f[k] || null;
-      if (!profile.data?.start_weight_kg && u.weight_kg) u.start_weight_kg = u.weight_kg;
-      const { error } = await supabase.from("profiles").update(u).eq("id", user.id);
+      if (!profile.data?.start_weight_kg && u["weight_kg"]) u["start_weight_kg"] = u["weight_kg"];
+      const { error } = await supabase.from("profiles").update(u as never).eq("id", user.id);
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["profile"] }); toast.success("Saved"); },
@@ -77,7 +77,7 @@ function ProfilePage() {
   const select = (k: keyof typeof SELECTS, label: string) => (
     <div className="space-y-1.5">
       <Label>{label}</Label>
-      <Select value={f[k] || undefined} onValueChange={(v) => setF({ ...f, [k]: v })}>
+      <Select value={f[k] ?? ""} onValueChange={(v) => setF({ ...f, [k]: v })}>
         <SelectTrigger aria-label={label}><SelectValue placeholder="Choose" /></SelectTrigger>
         <SelectContent>{SELECTS[k].map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)}</SelectContent>
       </Select>

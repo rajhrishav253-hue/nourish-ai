@@ -16,9 +16,9 @@ export const Route = createFileRoute("/api/chat")({
       POST: async ({ request }) => {
         const token = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
         if (!token) return json(401, "Please sign in again.");
-        const url = process.env.SUPABASE_URL!;
-        const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
-        const apiKey = process.env.LOVABLE_API_KEY;
+        const url = process.env["SUPABASE_URL"]!;
+        const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
+        const apiKey = process.env["LOVABLE_API_KEY"];
         if (!apiKey) return json(500, "AI is not configured.");
         const supabase = createClient<Database>(url, key, {
           global: { headers: { Authorization: `Bearer ${token}` } },
