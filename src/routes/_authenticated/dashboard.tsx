@@ -1,8 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Search, Trash2, LogOut, Droplet } from "lucide-react";
+import { Plus, Search, Trash2, LogOut, Droplet, MessageCircle, Scale, UserCog } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,9 +94,14 @@ function Dashboard() {
           <p className="text-sm text-muted-foreground">{new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</p>
           <h1 className="font-display text-2xl font-bold md:text-3xl">Hi {p?.name ?? "there"} 👋</h1>
         </div>
-        <Button variant="ghost" size="icon" aria-label="Sign out" onClick={async () => { await supabase.auth.signOut(); nav({ to: "/auth" }); }}>
-          <LogOut className="h-5 w-5" />
-        </Button>
+        <nav className="flex items-center gap-1">
+          <Button asChild variant="ghost" size="sm"><Link to="/coach"><MessageCircle className="mr-1 h-4 w-4" /><span className="hidden sm:inline">AI Coach</span></Link></Button>
+          <Button asChild variant="ghost" size="sm"><Link to="/weight"><Scale className="mr-1 h-4 w-4" /><span className="hidden sm:inline">Weight</span></Link></Button>
+          <Button asChild variant="ghost" size="sm"><Link to="/profile"><UserCog className="mr-1 h-4 w-4" /><span className="hidden sm:inline">My goals</span></Link></Button>
+          <Button variant="ghost" size="icon" aria-label="Sign out" onClick={async () => { await supabase.auth.signOut(); nav({ to: "/auth" }); }}>
+            <LogOut className="h-5 w-5" />
+          </Button>
+        </nav>
       </header>
 
       <div className="mx-auto grid max-w-6xl gap-4 px-4 md:grid-cols-3 md:px-6">
