@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedWeightRouteImport } from './routes/_authenticated/weight'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedCoachIndexRouteImport } from './routes/_authenticated/coach.index'
@@ -35,6 +36,11 @@ const AuthRoute = AuthRouteImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedWeightRoute = AuthenticatedWeightRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/weight': typeof AuthenticatedWeightRoute
   '/api/chat': typeof ApiChatRoute
   '/coach/$threadId': typeof AuthenticatedCoachThreadIdRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/weight': typeof AuthenticatedWeightRoute
   '/api/chat': typeof ApiChatRoute
   '/coach/$threadId': typeof AuthenticatedCoachThreadIdRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/weight': typeof AuthenticatedWeightRoute
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/coach/$threadId': typeof AuthenticatedCoachThreadIdRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/profile'
     | '/weight'
     | '/api/chat'
     | '/coach/$threadId'
@@ -103,6 +113,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/profile'
     | '/weight'
     | '/api/chat'
     | '/coach/$threadId'
@@ -113,6 +124,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/profile'
     | '/_authenticated/weight'
     | '/api/chat'
     | '/_authenticated/coach/$threadId'
@@ -156,6 +168,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/weight': {
       id: '/_authenticated/weight'
       path: '/weight'
@@ -189,6 +208,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedWeightRoute: typeof AuthenticatedWeightRoute
   AuthenticatedCoachThreadIdRoute: typeof AuthenticatedCoachThreadIdRoute
   AuthenticatedCoachIndexRoute: typeof AuthenticatedCoachIndexRoute
@@ -196,6 +216,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedWeightRoute: AuthenticatedWeightRoute,
   AuthenticatedCoachThreadIdRoute: AuthenticatedCoachThreadIdRoute,
   AuthenticatedCoachIndexRoute: AuthenticatedCoachIndexRoute,
