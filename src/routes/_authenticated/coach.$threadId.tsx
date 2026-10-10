@@ -53,13 +53,13 @@ function CoachPage() {
 
   async function newThread() {
     const { data, error } = await supabase.from("chat_threads").insert({}).select("id").single();
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     await qc.invalidateQueries({ queryKey: ["threads"] });
     nav({ to: "/coach/$threadId", params: { threadId: data.id } });
   }
   async function deleteThread(id: string) {
     const { error } = await supabase.from("chat_threads").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     await qc.invalidateQueries({ queryKey: ["threads"] });
     if (id === threadId) nav({ to: "/coach" });
   }
