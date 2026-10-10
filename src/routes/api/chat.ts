@@ -36,7 +36,7 @@ export const Route = createFileRoute("/api/chat")({
         if (last?.role === "user") {
           const { error } = await supabase.from("chat_messages").upsert(
             { thread_id: threadId, ui_id: last.id, role: "user", message: last as unknown as Json },
-            { onConflict: "ui_id" },
+            { onConflict: "thread_id,ui_id" },
           );
           if (error) console.error("save user msg", error);
           if (thread.title === "New chat" || !thread.title) {
@@ -99,7 +99,7 @@ ${JSON.stringify(weights.data ?? [])}`;
           onFinish: async ({ responseMessage }) => {
             const { error } = await supabase.from("chat_messages").upsert(
               { thread_id: threadId, ui_id: responseMessage.id, role: "assistant", message: responseMessage as unknown as Json },
-              { onConflict: "ui_id" },
+              { onConflict: "thread_id,ui_id" },
             );
             if (error) console.error("save assistant msg", error);
             await supabase.from("chat_threads").update({ updated_at: new Date().toISOString() }).eq("id", threadId);

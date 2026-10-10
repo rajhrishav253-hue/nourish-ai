@@ -9,3 +9,10 @@ describe("scaleNutrition", () => {
     expect(r.fat).toBe(5.4);
   });
 });
+
+import { weightProgress } from "./nutrition";
+describe("weightProgress", () => {
+  it("loss: 80 -> 75 toward 70 is 50%", () => expect(weightProgress(80, 75, 70)).toBe(50));
+  it("gain: 60 -> 63 toward 66 is 50%", () => expect(weightProgress(60, 63, 66)).toBe(50));
+  it("moving away clamps to 0", () => expect(weightProgress(80, 82, 70)).toBe(0));
+});

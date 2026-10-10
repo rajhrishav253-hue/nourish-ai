@@ -22,3 +22,10 @@ export const MEALS = [
   { id: "dinner", label: "Dinner" },
   { id: "other", label: "Other" },
 ] as const;
+
+/** Percent (0-100) of the way from start weight to target weight. */
+export function weightProgress(start: number, current: number, target: number) {
+  if (start === target) return 100;
+  const p = ((start - current) / (start - target)) * 100;
+  return Math.max(0, Math.min(100, Math.round(p)));
+}
