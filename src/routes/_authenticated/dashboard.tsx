@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Search, Trash2, LogOut, Droplet, MessageCircle, Scale, UserCog } from "lucide-react";
+import { Plus, Search, Trash2, LogOut, Droplet, MessageCircle, Scale, UserCog, BarChart3, Activity } from "lucide-react";
+import { FitnessSummary } from "@/components/fitness-summary";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,8 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       { name: "description", content: "Your daily calories, macros and food log." },
       { property: "og:title", content: "Today — NutriTrack" },
       { property: "og:description", content: "Your daily calories, macros and food log." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Dashboard,
@@ -32,6 +35,20 @@ function Dashboard() {
   const nav = useNavigate();
   const date = todayISO();
   const [logMeal, setLogMeal] = useState<string | null>(null);
+  const weights = useQuery({
+    queryKey: ["weights", "dashboard", user.id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("weight_logs").select("id,weight_kg,log_date,created_at").eq("user_id", user.id).lte("log_date", date).order("log_date", { ascending: false }).order("created_at", { ascending: false }).limit(5);
+      if (error) throw error; return data;
+    },
+  });
+  const activity = useQuery({
+    queryKey: ["logs", "activity", user.id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("food_logs").select("id,food_name,kcal,created_at,log_date").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5);
+      if (error) throw error; return data;
+    },
+  });
 
   const profile = useQuery({
     queryKey: ["profile", user.id],
@@ -89,12 +106,14 @@ function Dashboard() {
 
   return (
     <main className="min-h-screen bg-background pb-24 text-foreground">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 md:px-6">
-        <div>
+      <header className="mx-auto grid max-w-6xl gap-4 px-4 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center md:px-6">
+        <div className="min-w-0">
+          <p className="mb-1 text-xs font-semibold text-primary">NutriTrack / Today</p>
           <p className="text-sm text-muted-foreground">{new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</p>
           <h1 className="font-display text-2xl font-bold md:text-3xl">Hi {p?.name ?? "there"} 👋</h1>
         </div>
-        <nav className="flex items-center gap-1">
+        <nav className="flex shrink-0 items-center gap-1" aria-label="Main navigation">
+          <Button asChild variant="ghost" size="sm"><Link to="/analytics" aria-label="Analytics"><BarChart3 className="h-4 w-4" /><span className="sm:hidden">Reports</span><span className="hidden sm:inline">Analytics</span></Link></Button>
           <Button asChild variant="ghost" size="sm"><Link to="/coach"><MessageCircle className="mr-1 h-4 w-4" /><span className="hidden sm:inline">AI Coach</span></Link></Button>
           <Button asChild variant="ghost" size="sm"><Link to="/weight"><Scale className="mr-1 h-4 w-4" /><span className="hidden sm:inline">Weight</span></Link></Button>
           <Button asChild variant="ghost" size="sm"><Link to="/profile"><UserCog className="mr-1 h-4 w-4" /><span className="hidden sm:inline">My goals</span></Link></Button>
@@ -105,6 +124,7 @@ function Dashboard() {
       </header>
 
       <div className="mx-auto grid max-w-6xl gap-4 px-4 md:grid-cols-3 md:px-6">
+        {profile.isLoading || weights.isLoading ? <Skeleton className="h-36 w-full md:col-span-3" /> : profile.isError || weights.isError ? <div className="md:col-span-3"><ErrorBox onRetry={() => { profile.refetch(); weights.refetch(); }} /></div> : <FitnessSummary current={weights.data?.[0]?.weight_kg ?? p?.weight_kg ?? null} start={p?.start_weight_kg ?? null} target={p?.target_weight_kg ?? null} goal={p?.goal ?? null} />}
         <section className="animate-rise rounded-3xl border bg-card p-6 md:col-span-2">
           {logs.isError ? (
             <ErrorBox onRetry={() => logs.refetch()} />
@@ -122,6 +142,13 @@ function Dashboard() {
               </div>
             </div>
           )}
+        </section>
+        <section className="border-t pt-6 md:col-span-3">
+          <h2 className="mb-4 flex items-center gap-2 font-display text-lg font-semibold"><Activity className="h-5 w-5 text-primary" />Recent activity</h2>
+          {activity.isLoading ? <Skeleton className="h-24 w-full" /> : activity.isError ? <ErrorBox onRetry={() => activity.refetch()} /> : <ul className="divide-y">
+            {[...(activity.data ?? []).map(l => ({ id: l.id, time: l.created_at, label: `Logged ${l.food_name}`, detail: `${Math.round(l.kcal)} kcal · ${l.log_date}` })), ...(weights.data ?? []).map(w => ({ id: w.id, time: w.created_at, label: `Weigh-in: ${w.weight_kg} kg`, detail: w.log_date }))].sort((a, b) => b.time.localeCompare(a.time)).slice(0, 5).map(a => <li key={a.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 py-3"><p className="min-w-0 truncate text-sm font-medium">{a.label}</p><p className="text-xs text-muted-foreground">{a.detail}</p></li>)}
+            {!activity.data?.length && !weights.data?.length && <li className="py-4 text-sm text-muted-foreground">No activity yet.</li>}
+          </ul>}
         </section>
 
         <section className="animate-rise rounded-3xl border bg-card p-6">
@@ -210,9 +237,9 @@ function LogFoodDialog({ meal, date, onClose }: { meal: string | null; date: str
 
   const save = useMutation({
     mutationFn: async () => {
-      if (!food || !sel || grams <= 0) throw new Error("Enter a valid amount");
+      if (!food || !sel || !n || grams <= 0) throw new Error("Enter a valid amount");
       const { error } = await supabase.from("food_logs").insert({
-        food_id: food.id, food_name: food.name, quantity: Number(qty), unit: sel.unit, grams, log_date: date, meal_type: mealType, ...n!,
+        food_id: food.id, food_name: food.name, quantity: Number(qty), unit: sel.unit, grams, log_date: date, meal_type: mealType, ...n,
       });
       if (error) throw error;
     },
