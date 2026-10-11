@@ -14,7 +14,7 @@ describe("saved fitness reports", () => {
   });
   it("yearly has Jan–Dec averages and leaves missing weights empty", () => {
     const r = buildReport("yearly", "2026-06-01", [log("2026-01-01", 3100)], [{ log_date: "2026-01-01", weight_kg: 80 }, { log_date: "2026-01-31", weight_kg: 78 }, { log_date: "2026-03-01", weight_kg: 76 }], targets, "2026-12-31");
-    expect(r.rows).toHaveLength(12); expect(r.rows[0].label).toBe("Jan"); expect(r.rows[11].label).toBe("Dec"); expect(r.rows[0].kcal).toBe(100); expect(r.rows[0].weight).toBe(79); expect(r.rows[1].weight).toBeNull(); expect(r.change).toBe(-4);
+    expect(r.rows).toHaveLength(12); expect(r.rows[0]?.label).toBe("Jan"); expect(r.rows[11]?.label).toBe("Dec"); expect(r.rows[0]?.kcal).toBe(100); expect(r.rows[0]?.weight).toBe(79); expect(r.rows[1]?.weight).toBeNull(); expect(r.change).toBe(-4);
   });
   it("weight change uses a prior baseline and supports gain", () => {
     const r = buildReport("weekly", "2026-10-07", [], [{ log_date: "2026-10-04", weight_kg: 60 }, { log_date: "2026-10-07", weight_kg: 62 }], targets, "2026-10-11");
