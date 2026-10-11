@@ -143,13 +143,7 @@ function Dashboard() {
             </div>
           )}
         </section>
-        <section className="border-t pt-6 md:col-span-3">
-          <h2 className="mb-4 flex items-center gap-2 font-display text-lg font-semibold"><Activity className="h-5 w-5 text-primary" />Recent activity</h2>
-          {activity.isLoading ? <Skeleton className="h-24 w-full" /> : activity.isError ? <ErrorBox onRetry={() => activity.refetch()} /> : <ul className="divide-y">
-            {[...(activity.data ?? []).map(l => ({ id: l.id, time: l.created_at, label: `Logged ${l.food_name}`, detail: `${Math.round(l.kcal)} kcal · ${l.log_date}` })), ...(weights.data ?? []).map(w => ({ id: w.id, time: w.created_at, label: `Weigh-in: ${w.weight_kg} kg`, detail: w.log_date }))].sort((a, b) => b.time.localeCompare(a.time)).slice(0, 5).map(a => <li key={a.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 py-3"><p className="min-w-0 truncate text-sm font-medium">{a.label}</p><p className="text-xs text-muted-foreground">{a.detail}</p></li>)}
-            {!activity.data?.length && !weights.data?.length && <li className="py-4 text-sm text-muted-foreground">No activity yet.</li>}
-          </ul>}
-        </section>
+
 
         <section className="animate-rise rounded-3xl border bg-card p-6">
           <div className="flex items-center gap-2 text-water"><Droplet className="h-5 w-5" /><h2 className="font-semibold text-foreground">Water</h2></div>
@@ -198,6 +192,13 @@ function Dashboard() {
               </div>
             );
           })}
+        </section>
+        <section className="border-t pt-6 md:col-span-3">
+          <h2 className="mb-4 flex items-center gap-2 font-display text-lg font-semibold"><Activity className="h-5 w-5 text-primary" />Recent activity</h2>
+          {activity.isLoading ? <Skeleton className="h-24 w-full" /> : activity.isError ? <ErrorBox onRetry={() => activity.refetch()} /> : <ul className="divide-y">
+            {[...(activity.data ?? []).map(l => ({ id: l.id, time: l.created_at, label: `Logged ${l.food_name}`, detail: `${Math.round(l.kcal)} kcal · ${l.log_date}` })), ...(weights.data ?? []).map(w => ({ id: w.id, time: w.created_at, label: `Weigh-in: ${w.weight_kg} kg`, detail: w.log_date }))].sort((a, b) => b.time.localeCompare(a.time)).slice(0, 5).map(a => <li key={a.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 py-3"><p className="min-w-0 truncate text-sm font-medium">{a.label}</p><p className="text-xs text-muted-foreground">{a.detail}</p></li>)}
+            {!activity.data?.length && !weights.data?.length && <li className="py-4 text-sm text-muted-foreground">No activity yet.</li>}
+          </ul>}
         </section>
       </div>
 
