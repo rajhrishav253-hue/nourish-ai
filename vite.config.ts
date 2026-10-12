@@ -12,4 +12,7 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // When built on Vercel, emit Vercel's server output so pages and server routes work there.
+  // Lovable's own publishing ignores this and always uses its Cloudflare target.
+  ...(process.env.VERCEL ? { nitro: { preset: "vercel" } } : {}),
 });
