@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Add a site-wide dark/light mode switch with remembered appearance
 - [x] Dashboard + food logging
 - [x] AI nutrition coach (uses logs + goals)
 - [x] Weight logging + progress chart

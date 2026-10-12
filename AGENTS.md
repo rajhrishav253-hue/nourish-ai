@@ -13,3 +13,4 @@
 - Analytics reads the owner's persisted food and weight logs in paginated queries; use the existing profiles query key for shared targets and the logs/weights prefixes for mutation invalidation.
 - Show absent weigh-ins as missing rather than fabricating measurements; daily averages divide by elapsed calendar days, and monthly weight averages use recorded daily means.
 - Vercel builds switch the server output to the Vercel preset only when the VERCEL env var is set, so Lovable publishing keeps its own target untouched.
+- Mount the appearance switch in the root layout and apply the existing dark tokens on the document element so every page and portal shares the selected theme; restore browser appearance preferences after hydration.
